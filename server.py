@@ -1,15 +1,34 @@
 from flask import Flask, request, send_file, Response, send_from_directory
 from flask_cors import CORS
-import os
 import base64
 import json
+from fileinput import filename
+from PIL import Image, ImageTk
+import os
+import code
+from stegano import lsb 
+from randimage import get_random_image, show_array
+import base64
+import matplotlib as mp
+from cryptography.fernet import Fernet
+# text_data=""
 
 app = Flask(__name__)
 CORS(app)
 
+def Hide():
+    #global secret
+    message=text_data
+    print("apna", message)
+    secret = lsb.hide('save_pic.png',message)
+    secret.save('img.png')
+    clear_message = lsb.reveal('img.png')
+    print(clear_message)
+
 @app.route('/imag', methods=['GET'])
 def myimg():
-    return send_file('save_pic.jpg', mimetype='image/jpg')
+    Hide()
+    return send_file('save_pic.png', mimetype='image/png')
 
 @app.route('/success', methods=['POST'])
 def index():
@@ -18,9 +37,10 @@ def index():
     """
     # Read image from request and write to server's file system
     data = request.files['file']
-    imagetext = request.form.get('plaintext')
-    print(imagetext)
-    data.save('save_pic.jpg')
+    global text_data
+    text_data = request.form.get('plaintext')
+    print(text_data)
+    data.save('save_pic.png')
 
     # Do something with the image e.g. transform, crop, scale, computer vision detection
     # some_function_you_want()
