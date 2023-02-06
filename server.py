@@ -11,15 +11,24 @@ from randimage import get_random_image, show_array
 import base64
 import matplotlib as mp
 from cryptography.fernet import Fernet
+from randimage import get_random_image, show_array
 # text_data=""
 
 app = Flask(__name__)
 CORS(app)
 
+@app.route('/generate', methods=['GET'])
+def gen_image():
+    print('inside')
+    img_size = (250,250)
+    imgarr = get_random_image(img_size)
+    mp.image.imsave('save_pic.png', imgarr)
+    return send_file('save_pic.png', mimetype='image/png')
+
 def Hide():
     #global secret
     message=text_data
-    print("apna", message)
+    print(message)
     secret = lsb.hide('save_pic.png',message)
     secret.save('img.png')
     clear_message = lsb.reveal('img.png')
@@ -28,7 +37,7 @@ def Hide():
 @app.route('/imag', methods=['GET'])
 def myimg():
     Hide()
-    return send_file('save_pic.png', mimetype='image/png')
+    return send_file('img.png', mimetype='image/png')
 
 @app.route('/success', methods=['POST'])
 def index():
@@ -54,7 +63,7 @@ def index():
     # response['more_fields'] = 'more data' # Can return values such as Machine Learning accuracy or precision
 
     # If only the image is required, you can use send_file instead
-    return send_file('image.pdf', mimetype='application/pdf')
+    return send_file('img.png', mimetype='image/png')
 
     # For sending multiple use this
     #return Response(json.dumps(response))
