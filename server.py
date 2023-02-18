@@ -25,16 +25,20 @@ CORS(app)
 #     mp.image.imsave('save_pic.png', imgarr)
 #     return send_file('save_pic.png', mimetype='image/png')
 
+@app.route('/decrypt', methods=['POST'])
+def mydecrypt():
+    clear_message = lsb.reveal('img.png')
+    print(clear_message)
+    return clear_message
+
 @app.route('/hide', methods=['POST'])
 def Hide():
     text_data = request.form.get('plaintext')
-    #global secret
+    global secret
     message=text_data
     print(message)
     secret = lsb.hide('save_pic.png',message)
     secret.save('img.png')
-    clear_message = lsb.reveal('img.png')
-    print(clear_message)
 
     return 'done'
 
