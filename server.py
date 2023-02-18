@@ -17,15 +17,17 @@ from randimage import get_random_image, show_array
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/generate', methods=['GET'])
-def gen_image():
-    print('inside')
-    img_size = (250,250)
-    imgarr = get_random_image(img_size)
-    mp.image.imsave('save_pic.png', imgarr)
-    return send_file('save_pic.png', mimetype='image/png')
+# @app.route('/generate', methods=['GET'])
+# def gen_image():
+#     print('inside')
+#     img_size = (250,250)
+#     imgarr = get_random_image(img_size)
+#     mp.image.imsave('save_pic.png', imgarr)
+#     return send_file('save_pic.png', mimetype='image/png')
 
+@app.route('/hide', methods=['POST'])
 def Hide():
+    text_data = request.form.get('plaintext')
     #global secret
     message=text_data
     print(message)
@@ -34,12 +36,13 @@ def Hide():
     clear_message = lsb.reveal('img.png')
     print(clear_message)
 
+    return 'done'
+
 @app.route('/imag', methods=['GET'])
 def myimg():
-    Hide()
     return send_file('img.png', mimetype='image/png')
 
-@app.route('/success', methods=['POST'])
+@app.route('/upload', methods=['POST'])
 def index():
     """
     POST route handler that accepts an image, manipulates it and returns a JSON containing a possibly different image with more fields
@@ -47,8 +50,8 @@ def index():
     # Read image from request and write to server's file system
     data = request.files['file']
     global text_data
-    text_data = request.form.get('plaintext')
-    print(text_data)
+    # text_data = request.form.get('plaintext')
+    # print(text_data)
     data.save('save_pic.png')
 
     # Do something with the image e.g. transform, crop, scale, computer vision detection
