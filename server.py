@@ -12,6 +12,7 @@ import base64
 import matplotlib as mp
 from cryptography.fernet import Fernet
 from randimage import get_random_image, show_array
+import rsa
 # text_data=""
 
 app = Flask(__name__)
@@ -27,7 +28,8 @@ CORS(app)
 
 @app.route('/decrypt', methods=['POST'])
 def mydecrypt():
-    clear_message = lsb.reveal('img.png')
+    data = request.files['file']
+    clear_message = lsb.reveal(data)
     print(clear_message)
     return clear_message
 
@@ -37,10 +39,26 @@ def Hide():
     global secret
     message=text_data
     print(message)
+    (bob_pub, bob_priv) = rsa.newkeys(512)
+
+    with open('private.pem', mode='wb') as privatefile:
+        privatefile.write(bob_priv.save_pkcs1())
+    
+    
     secret = lsb.hide('save_pic.png',message)
     secret.save('img.png')
+    return send_file('private.pem', mimetype="text/plain")
 
-    return 'done'
+@app.route('/del', methods=['POST'])
+def delit():
+    os.remove('save_pic.png')
+    os.remove('private.pem')
+    return 'deleted save_pic and private.pem'
+
+@app.route('/del2', methods=['POST'])
+def delit2():
+    os.remove('img.png')
+    return 'deleted img.png'
 
 @app.route('/imag', methods=['GET'])
 def myimg():
@@ -70,7 +88,8 @@ def index():
     # response['more_fields'] = 'more data' # Can return values such as Machine Learning accuracy or precision
 
     # If only the image is required, you can use send_file instead
-    return send_file('img.png', mimetype='image/png')
+    #return send_file('img.png', mimetype='image/png')
+    return 'done'
 
     # For sending multiple use this
     #return Response(json.dumps(response))
