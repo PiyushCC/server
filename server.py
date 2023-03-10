@@ -47,7 +47,7 @@ def Hide():
     
     secret = lsb.hide('save_pic.png',message)
     secret.save('img.png')
-    return send_file('private.pem', mimetype="text/plain")
+    return send_file('private.pem', as_attachment=True)
 
 @app.route('/del', methods=['POST'])
 def delit():
